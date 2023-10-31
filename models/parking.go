@@ -1,8 +1,8 @@
 package models
 
 import (
-	"sync"
-	"time"
+	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/canvas"
 )
 
 type Space struct {
@@ -12,49 +12,31 @@ type Space struct {
 }
 
 type Parking struct {
-	Spaces []Space
-	mu     sync.Mutex
+	background        *canvas.Image
+	Spaces           []Space
+	BackgroundImages []*canvas.Image
 }
 
-func NewParking(spaces int) *Parking {
-	p := &Parking{}
+func NewParking(spaces int, image *canvas.Image, spacingX, spacingY int) *Parking {
+	parking := &Parking{
+		background: image,
+		Spaces:     make([]Space, spaces),
+	}
+
 	for i := 0; i < spaces; i++ {
-		p.Spaces = append(p.Spaces, Space{ID: i, IsFree: true, Color: "Green"}) // Espacios inicialmente libres (verde)
-	}
-	return p
-}
+		// Crear una copia de la imagen de fondo
+		imageCopy := canvas.NewImageFromImage(image.Image)
 
-func (p *Parking) OccupySpace() int {
-	p.mu.Lock()
-	defer p.mu.Unlock() 
-	for i := range p.Spaces {
-		if p.Spaces[i].IsFree {
-			p.Spaces[i].IsFree = false
-			p.Spaces[i].Color = "Red" // Espacio ocupado (rojo)
-			return i
-		}
-	}
-	return -1 // No hay espacios disponibles
-}
+		// Ajustar la posición de la copia para separarlas
+		imageCopy.Move(fyne.NewPos(float32(i)*float32(spacingX), float32(i)*float32(spacingY)))
 
-func (p *Parking) ReleaseSpace(spaceID int) {
-	p.mu.Lock()
-	defer p.mu.Unlock()
-	if spaceID >= 0 && spaceID < len(p.Spaces) {
-		p.Spaces[spaceID].IsFree = true
-		p.Spaces[spaceID].Color = "Green" // Espacio liberado (verde)
+		// Almacenar la copia en BackgroundImages
+		parking.BackgroundImages = append(parking.BackgroundImages, imageCopy)
 	}
+
+	return parking
 }
 
 func (p *Parking) Run() {
-	go func() {
-		for {
-			// Simulación de tiempo en el estacionamiento
-			time.Sleep(time.Second * 2)
-
-			// Ejemplo: Liberar espacios aleatorios después de un tiempo
-			spaceIDToRelease := 1 // Cambia esto según tu lógica
-			p.ReleaseSpace(spaceIDToRelease)
-		}
-	}()
+	
 }
