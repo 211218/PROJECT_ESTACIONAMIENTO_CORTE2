@@ -5,9 +5,17 @@ go 1.21.0
 require fyne.io/fyne v1.4.3
 
 require (
+	github.com/faiface/glhf v0.0.0-20181018222622-82a6317ac380 // indirect
+	github.com/faiface/mainthread v0.0.0-20171120011319-8b78f0a41ae3 // indirect
+	github.com/go-gl/mathgl v0.0.0-20190416160123-c4601bc793c7 // indirect
+	github.com/pkg/errors v0.9.1 // indirect
+)
+
+require (
 	fyne.io/fyne/v2 v2.4.1 // indirect
 	fyne.io/systray v1.10.1-0.20230722100817-88df1e0ffa9a // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/faiface/pixel v0.10.0
 	github.com/fogleman/gg v1.3.0 // indirect
 	github.com/fredbi/uri v1.0.0 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
