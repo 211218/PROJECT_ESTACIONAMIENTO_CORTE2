@@ -1,34 +1,20 @@
 package models
-
 import (
-    "fyne.io/fyne/v2/canvas"
-    "sync"
+
+	"fyne.io/fyne/v2/canvas"
 )
-
-type Space struct {
-    ID     int
-    IsFree bool
-    Color  string
-}
-
 type Parking struct {
-    BackgroundImage  *canvas.Image
-    Spaces           []Space
-    mutex            *sync.Mutex // Semáforo para exclusión mutua
+    image  *canvas.Image
+    numSpaces int
+	X, Y   float32
+	SpeedX float32 // Velocidad de desplazamiento en el eje X
 }
 
-func NewParking(spaces int, image *canvas.Image, mutex *sync.Mutex) *Parking {
-    parking := &Parking{
-        BackgroundImage: image,
-        Spaces:          make([]Space, spaces),
-        mutex:           mutex, // Proporciona un semáforo para garantizar la exclusión mutua
-    }
-    return parking
+
+func NewParking(numSpaces int, image *canvas.Image) *Parking {
+    return &Parking{numSpaces: numSpaces, image: image}
 }
 
 func (p *Parking) Run() {
-    // Utiliza el semáforo para garantizar la exclusión mutua en la sección crítica
-    p.mutex.Lock()
-    // Realiza las operaciones críticas aquí
-    p.mutex.Unlock()
+
 }

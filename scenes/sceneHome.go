@@ -18,17 +18,10 @@ func NewMainMenuScene(window fyne.Window) *MainMenuScene {
 	return &MainMenuScene{window: window}
 }
 
-var parking *models.Parking
-
 func (s *MainMenuScene) Show() {
 	backgroundImage := canvas.NewImageFromURI(storage.NewFileURI("./assets/estacionamiento.jpg"))
 	backgroundImage.Resize(fyne.NewSize(1080, 720))
 	backgroundImage.Move(fyne.NewPos(0, 0))
-
-    // Creamos un modelo de cada espacio del estacionamiento
-    parkingImg := canvas.NewImageFromURI(storage.NewFileURI("./assets/background.jpg"))
-    parkingImg.Resize(fyne.NewSize(60, 100))
-    parkingImg.Move(fyne.NewPos(0, 0)) // Ajusta la posición según tus necesidades
 
 	// Creamos un semáforo para exclusión mutua
 	vehicleMutex := new(sync.Mutex)
@@ -63,50 +56,52 @@ func (s *MainMenuScene) Show() {
 		}
 	}()
 
+	// Crear un contenedor para los espacios de estacionamiento
+	spaceContainer := container.NewWithoutLayout()
+
+	// Espaciado horizontal entre los espacios
+	horizontalSpacing := 80 // Ajusta según tus necesidades
+
+	// Función para crear un nuevo espacio y agregarlo al contenedor
+	createSpace := func(x, y float32) {
+		spaceImg := canvas.NewImageFromURI(storage.NewFileURI("./assets/background.jpg"))
+		spaceImg.Resize(fyne.NewSize(60, 100))
+		spaceImg.Move(fyne.NewPos(x, y)) // Ajusta la posición según tus necesidades
+		spaceContainer.Add(spaceImg)
+
+		// Ejecutar la lógica específica del espacio (utiliza tu modelo Parking)
+		go func() {
+			for {
+				parking := models.NewParking(20, spaceImg)
+				parking.Run() // Ejecuta la lógica de Parking en una goroutine
+				// Realiza cualquier otra lógica específica del espacio
+			}
+		}()
+	}
 
 
+	// Bucle para crear 20 espacios de estacionamiento
+	for i := 0; i < 20; i++ {
+		var x, y float32
 
+		if i < 10 {
+			// Primeros 10 espacios (arriba)
+			x = float32(i * horizontalSpacing)
+			y = 250
+		} else {
+			// Siguientes 10 espacios (abajo)
+			x = float32((i - 10) * horizontalSpacing)
+			y = 370 // Ajusta la posición vertical si es necesario
+		}
 
+		// mover los espacios a la derecha
+		x += 250
 
-// Crear un contenedor para los espacios de estacionamiento
-spaceContainer := container.NewWithoutLayout()
+		createSpace(x, y)
+	}
 
-// Espaciado horizontal entre los espacios
-horizontalSpacing := 80 // Ajusta según tus necesidades
-
-// Función para crear un nuevo espacio y agregarlo al contenedor
-createSpace := func(x, y float32) {
-    spaceImg := canvas.NewImageFromURI(storage.NewFileURI("./assets/background.jpg"))
-    spaceImg.Resize(fyne.NewSize(60, 100))
-    spaceImg.Move(fyne.NewPos(x, y)) // Ajusta la posición según tus necesidades
-    spaceContainer.Add(spaceImg)
-}
-
-// Bucle para crear 20 espacios de estacionamiento
-for i := 0; i < 20; i++ {
-    var x, y float32
-
-    if i < 10 {
-        // Primeros 10 espacios (arriba)
-        x = float32(i * horizontalSpacing)
-        y = 250
-    } else {
-        // Siguientes 10 espacios (abajo)
-        x = float32((i - 10) * horizontalSpacing)
-        y = 370 // Ajusta la posición vertical si es necesario
-    }
-
-	// mover los espacios a la derecha
-	x += 250
-
-
-    createSpace(x, y)
-}
-
-// Establecer el contenedor de espacios en la posición deseada en la interfaz
-content := container.NewWithoutLayout(backgroundImage, spaceContainer, vehicleContainer)
-s.window.SetContent(content)
-
-
+	// Establecer el contenedor de espacios en la posición deseada en la interfaz
+	content := container.NewWithoutLayout(backgroundImage, spaceContainer, vehicleContainer)
+	s.window.SetContent(content)
 
 }
