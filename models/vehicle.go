@@ -23,11 +23,10 @@ func (v *Vehicle) Run() {
     time.Sleep(time.Duration(100+rand.Intn(400)) * time.Millisecond)
 
     v.mutex.Lock() // Bloquear exclusión mutua antes de mover el vehículo
-    for i := 0; i < 5; i++ {
+    for i := 0; i < 12; i++ {
         v.image.Move(fyne.NewPos(v.image.Position().X+10, v.image.Position().Y))
         canvas.Refresh(v.image)
         time.Sleep(time.Millisecond * 500)
     }
     v.mutex.Unlock() // Desbloquear exclusión mutua después de mover el vehículo
 }
-   
